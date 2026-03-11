@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindIt @ BAC</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background glow -->
+  <div class="glow-bg"></div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">✓ <span id="toast-msg">Done!</span></div>
+
+  <!-- ══════════════════════════════════════
+       CLAIM MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="claimModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Claim this item</div>
+      <div class="modal-sub">
+        To protect against false claims, answer the question below.
+        Only the real owner would know.
+      </div>
+      <div class="verify-box" style="margin-bottom:0">
+        <div class="verify-title">🔐 Ownership Verification</div>
+        <div class="verify-question" id="modal-question">What colour is the phone case?</div>
+        <input class="verify-input" id="modal-answer" placeholder="Type your answer..." />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary"   onclick="submitClaim()">Submit Claim</button>
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: HOME
+  ══════════════════════════════════════ -->
+  <div class="screen active" id="screen-home">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="showToast('Notifications coming soon')">🔔</button>
+        <button class="avatar-btn" onclick="showScreen('profile')">TM</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="hero">
+        <div class="hero-label">BAC Lost &amp; Found</div>
+        <div class="hero-title">Find what<br /><span>matters to you</span></div>
+        <div class="hero-sub">
+          Someone on campus may have already found your item.
+          Check before you give up.
+        </div>
+      </div>
+
+      <div class="notif-banner">
+        <div class="notif-icon">📢</div>
+        <div class="notif-text">
+          <strong>3 new items posted today</strong>
+          A phone, student card, and water bottle were found on campus this morning.
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="cta-btn found" onclick="showScreen('post')">
+          <div class="cta-icon">🔍</div>
+          <div class="cta-label">I Found Something</div>
+          <div class="cta-sub">Post a found item</div>
+        </button>
+        <button class="cta-btn lost" onclick="showScreen('browse')">
+          <div class="cta-icon">😟</div>
+          <div class="cta-label">I Lost Something</div>
+          <div class="cta-sub">Search the board</div>
+        </button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num">47</div><div class="stat-label">Items Found</div></div>
+        <div class="stat-box"><div class="stat-num">38</div><div class="stat-label">Returned</div></div>
+        <div class="stat-box"><div class="stat-num">81%</div><div class="stat-label">Recovery</div></div>
+      </div>
+
+      <div class="section-head">
+        <h2>Recent Finds</h2>
+        <button class="see-all" onclick="showScreen('browse')">See all →</button>
+      </div>
+
+      <div id="home-items"></div>
+    </div>
+
+    <nav class="bottomnav">
+      <button class="nav-item active" onclick="showScreen('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" onclick="showScreen('browse')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Browse <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" onclick="showScreen('post')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Post <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" onclick="showScreen('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Messages <div class="nav-dot"></div>
+      </button>
+      <button class="nav-item" onclick="showScreen('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile <div class="nav-dot"></div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: BROWSE
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-browse">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+      <div class="topbar-right">
+        <button class="avatar-btn" onclick="showScreen('profile')">TM</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-title">Browse Items</div>
+      <div class="page-sub">All found items posted at BAC</div>
+
+      <div class="search-bar-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-bar"
+          id="search-input"
+          placeholder="Search by item, location..."
+          oninput="filterItems()"
+        />
+      </div>
+
+      <div class="filter-row" id="filter-row">
+        <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-chip" onclick="setFilter('Electronics',this)">Electronics</button>
+        <button class="filter-chip" onclick="setFilter('Clothing',this)">Clothing</button>
+        <button class="filter-chip" onclick="setFilter('Documents',this)">Documents</button>
+        <button class="filter-chip" onclick="setFilter('Accessories',this)">Accessories</button>
+        <button class="filter-chip" onclick="setFilter('Other',this)">Other</button>
+      </div>
+
+      <div class="results-label" id="results-label">Showing all items</div>
+      <div id="browse-items"></div>
+    </div>
+
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item active" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: POST
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-post">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+    </div>
+
+    <div class="content">
+      <div class="page-title">Post Found Item</div>
+      <div class="page-sub">Takes less than 60 seconds. Help someone get their stuff back.</div>
+
+      <div class="post-form">
+        <!-- Photo -->
+        <div>
+          <div class="field-label">Photo (required)</div>
+          <div class="photo-upload" id="photo-upload-area" onclick="document.getElementById('photo-file').click()">
+            <div class="photo-upload-icon">📷</div>
+            <div class="photo-upload-text">
+              <strong>Tap to take / upload photo</strong>
+              A clear photo helps the owner identify it
+            </div>
+          </div>
+          <div class="photo-preview" id="photo-preview">
+            <img id="photo-preview-img" src="" alt="Preview" />
+            <button class="photo-remove" onclick="removePhoto()">✕</button>
+          </div>
+          <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="previewPhoto(event)" />
+        </div>
+
+        <!-- Category -->
+        <div class="field-group">
+          <div class="field-label">Item Category</div>
+          <select class="field-input" id="post-category">
+            <option value="">Select category...</option>
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Documents</option>
+            <option>Accessories</option>
+            <option>Keys</option>
+            <option>Bag / Backpack</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Name -->
+        <div class="field-group">
+          <div class="field-label">Item Name</div>
+          <input class="field-input" id="post-name" placeholder="e.g. Black iPhone 14, Blue Hoodie..." />
+        </div>
+
+        <!-- Location -->
+        <div class="field-group">
+          <div class="field-label">Where did you find it?</div>
+          <select class="field-input" id="post-location">
+            <option value="">Select location...</option>
+            <option>Library</option>
+            <option>Cafeteria</option>
+            <option>Main Building - Block A</option>
+            <option>Main Building - Block B</option>
+            <option>Parking Lot</option>
+            <option>Sports Grounds</option>
+            <option>Computer Lab</option>
+            <option>Lecture Hall 1</option>
+            <option>Lecture Hall 2</option>
+            <option>Common Room</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+          <div class="field-label">Description (optional)</div>
+          <textarea class="field-input" id="post-desc" placeholder="Any extra details that help identify it..."></textarea>
+        </div>
+
+        <!-- Verification question -->
+        <div class="field-group">
+          <div class="field-label">Verification Question</div>
+          <input class="field-input" id="post-verify-q" placeholder="e.g. What sticker is on the back?" />
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:0.4rem">
+            Set a question only the real owner can answer.
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="submitPost()">Post Found Item →</button>
+      </div>
+    </div>
+
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item active" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: DETAIL
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-detail">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+    </div>
+    <div class="content" id="detail-content"></div>
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: MESSAGES
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-messages">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+    </div>
+    <div class="content">
+      <div class="page-title">Messages</div>
+      <div class="page-sub">Private chats about found items</div>
+      <div id="conversations-list"></div>
+    </div>
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item active" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: CHAT
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-chat">
+    <div class="topbar">
+      <button class="back-btn" style="padding:0;margin:0;border:none;background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center" onclick="showScreen('messages')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="topbar-logo" id="chat-topbar-name">Chat</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="content" id="chat-content"></div>
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item active" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN: PROFILE
+  ══════════════════════════════════════ -->
+  <div class="screen" id="screen-profile">
+    <div class="topbar">
+      <div class="topbar-logo">FindIt<span class="at">@</span><span class="bac">BAC</span></div>
+    </div>
+
+    <div class="content">
+      <div class="profile-header">
+        <div class="profile-avatar">TM</div>
+        <div>
+          <div class="profile-name">Thabo Mokoena</div>
+          <div class="profile-email">t.mokoena@bac.ac.za</div>
+          <div style="margin-top:6px"><span class="tag tag-open">BAC Student</span></div>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-bottom:1.5rem">
+        <div class="stat-box"><div class="stat-num" id="stat-posted">0</div><div class="stat-label">Posted</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-claimed">0</div><div class="stat-label">Claimed</div></div>
+        <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">Helped</div></div>
+      </div>
+
+      <div class="profile-tabs">
+        <button class="profile-tab active" id="tab-posted"  onclick="switchTab('posted')">My Posts</button>
+        <button class="profile-tab"        id="tab-claimed" onclick="switchTab('claimed')">My Claims</button>
+      </div>
+
+      <div id="profile-items"></div>
+
+      <div class="divider"></div>
+      <button class="btn-secondary" style="margin-top:0.5rem" onclick="showToast('Settings coming soon')">⚙️  Settings</button>
+      <button class="btn-secondary" style="margin-top:0.6rem;color:var(--red);border-color:#ff4d6d30" onclick="showToast('Signed out')">Sign Out</button>
+    </div>
+
+    <nav class="bottomnav">
+      <button class="nav-item" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('browse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Browse<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('post')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Post<div class="nav-dot"></div></button>
+      <button class="nav-item" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages<div class="nav-dot"></div></button>
+      <button class="nav-item active" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile<div class="nav-dot"></div></button>
+    </nav>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+
+</body>
+</html>
